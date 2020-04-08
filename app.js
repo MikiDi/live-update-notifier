@@ -36,12 +36,12 @@ app.post('/subscribe', verifyHeaders, async function (req, res) {
   res.send(payload);
 });
 
-app.delete('/subscription/:subscription_id', verifyHeaders, async function (req, res) { // unsubscribe
+app.delete('/subscriptions/:subscription_id', verifyHeaders, async function (req, res) { // unsubscribe
   await unSubscribe(req.headers['mu-session-id'], req.headers['mu-head-id'], req.params.subscription_id);
   res.status(201).end();
 });
 
-app.get('/subscription/:subscription_id', verifyHeaders, function (req, res) { // get status
+app.get('/subscriptions/:subscription_id', verifyHeaders, function (req, res) { // get status
   const subscription = dirtySubscriptions.find(s => {
     return s.id === req.params.subscription_id &&
       s.sessionId === req.headers['mu-session-id'] &&
