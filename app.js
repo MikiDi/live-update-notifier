@@ -22,7 +22,7 @@ function verifyHeaders (req, res, next) {
 app.post('/subscribe', verifyHeaders, async function (req, res) {
   if (Array.isArray(req.body.data)) {
     req.resources = req.body.data.map(r => r.id);
-  } else if (typeof req.body.data === 'object') {
+  } else if (req.body.data.id) {
     req.resources = [req.body.data.id];
   }
   const verifiedResourceUris = verifyResourceAccess(req.resources);
