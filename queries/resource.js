@@ -2,6 +2,8 @@ import { query, sparqlEscapeString } from 'mu';
 
 async function verifyResourceAccess (resourceIds) {
   const queryString = `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+  
 SELECT ?resource
 WHERE {
     ?resource mu:uuid ?id .

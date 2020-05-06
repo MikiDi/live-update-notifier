@@ -8,6 +8,9 @@ const SUBSCRIPTIONS_GRAPH = 'http://mu.semte.ch/graphs/subscriptions';
 async function subscribe (sessionId, headId, resources) {
   const subscriptionId = generateUuid();
   const queryString = `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+
 INSERT {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
@@ -31,6 +34,9 @@ WHERE {
 
 async function unSubscribe (sessionId, headId, subscriptionId) {
   const queryString = `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+
 DELETE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription ?p ?o .
@@ -54,6 +60,9 @@ WHERE {
 
 async function findSubscriptionsToResources (resources) {
   const queryString = `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+
 SELECT DISTINCT (?subscription AS ?uri) ?id ?sessionId ?headId
 WHERE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
@@ -77,6 +86,9 @@ WHERE {
 
 async function findSubscriptionsForSession (sessionId, headId) {
   const queryString = `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
+
 SELECT DISTINCT (?subscription AS ?uri) ?id ?sessionId ?headId
 WHERE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
