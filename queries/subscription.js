@@ -7,13 +7,14 @@ const SUBSCRIPTIONS_GRAPH = 'http://mu.semte.ch/graphs/subscriptions';
 
 async function subscribe (sessionUri, headId, resources) {
   const subscriptionId = generateUuid();
+  const subscriptionUri = 'http://mu.semte.ch/subscriptions' + subscriptionId;
   const queryString = `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
 INSERT DATA {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
-        ?subscription a ext:Subscription ;
+        ${sparqlEscapeUri(subscriptionUri)} a ext:Subscription ;
             mu:uuid ${sparqlEscapeString(subscriptionId)} ;
             ext:session ${sparqlEscapeUri(sessionUri)} ;
             ext:headId ${sparqlEscapeString(headId)} ;
