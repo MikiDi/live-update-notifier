@@ -24,6 +24,8 @@ app.post('/subscribe', verifyHeaders, async function (req, res) {
     req.resources = req.body.data.map(r => r.id);
   } else if (req.body.data.id) {
     req.resources = [req.body.data.id];
+  } else {
+    throw new Error('Payload must be valid JSONAPI');
   }
   const verifiedResourceUris = verifyResourceAccess(req.resources);
   const subscription = await subscribe(req.headers['mu-session-id'], req.headers['mu-head-id'], verifiedResourceUris);
