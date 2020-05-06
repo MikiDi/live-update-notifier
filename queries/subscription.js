@@ -5,7 +5,7 @@ import { parseSparqlResults } from './util';
 const SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
 const SUBSCRIPTIONS_GRAPH = 'http://mu.semte.ch/graphs/subscriptions';
 
-async function subscribe (sessionId, headId, resources) {
+async function subscribe (sessionUri, headId, resources) {
   const subscriptionId = generateUuid();
   const queryString = `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -22,7 +22,8 @@ INSERT {
 }
 WHERE {
     GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ${sparqlEscapeString(sessionId)} .
+        ?session mu:uuid ?sessionId .
+        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessionId .
     }
 }
   `;
@@ -32,7 +33,7 @@ WHERE {
   };
 }
 
-async function unSubscribe (sessionId, headId, subscriptionId) {
+async function unSubscribe (sessionUri, headId, subscriptionId) {
   const queryString = `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
@@ -44,7 +45,8 @@ DELETE {
 }
 WHERE {
     GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ${sparqlEscapeString(sessionId)} .
+        ?session mu:uuid ?sessionId .
+        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessionId .
     }
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
@@ -63,7 +65,7 @@ async function findSubscriptionsToResources (resources) {
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
-SELECT DISTINCT (?subscription AS ?uri) ?id ?sessionId ?headId
+SELECT DISTINCT (?subscription AS ?uri) ?id (?session AS ?sessionId) ?headId
 WHERE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
@@ -76,7 +78,7 @@ WHERE {
         }
     }
     GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessionId .
+        ?session mu:uuid ?sessid .
     }
 }
   `;
@@ -84,21 +86,22 @@ WHERE {
   return parseSparqlResults(result);
 }
 
-async function findSubscriptionsForSession (sessionId, headId) {
+async function findSubscriptionsForSession (sessionUri, headId) {
   const queryString = `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
-SELECT DISTINCT (?subscription AS ?uri) ?id ?sessionId ?headId
+SELECT DISTINCT (?subscription AS ?uri) ?id
 WHERE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
             mu:uuid ?id ;
             ext:session ?session ;
-            ext:headId ?headId .
+            ext:headId ${sparqlEscapeString(headId)}  .
     }
     GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessionId .
+        ?session mu:uuid ?sessid .
+        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessid .
     }
 }
   `;
