@@ -44,10 +44,10 @@ app.delete('/subscriptions/:subscription_id', verifyHeaders, async function (req
 });
 
 app.get('/subscriptions/:subscription_id', verifyHeaders, function (req, res) { // get status
-  const subscription = dirtySubscriptions.find(s => {
-    return s.id === req.params.subscription_id &&
-      s.sessionId === req.headers['mu-session-id'] &&
-      s.headId === req.headers['mu-head-id'];
+  const subscription = dirtySubscriptions.find(sub => {
+    return sub.id === req.params.subscription_id &&
+      sub.sessionId === req.headers['mu-session-id'] &&
+      sub.headId === req.headers['mu-head-id'];
   });
   if (subscription) {
     res.status(205).end(); // Reset content: Updates available, should reload
