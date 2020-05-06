@@ -17,7 +17,7 @@
     "body-parser": "^1.19.0"
   },
   "bugs": {
-    "url": "https://github.com/kanselarij-vlaanderen/file-bundling-service/issues"
+    "url": "https://github.com/MikiDi/live-update-notifier/issues"
   },
-  "homepage": "https://github.com/kanselarij-vlaanderen/file-bundling-service#readme"
+  "homepage": "https://github.com/MikiDi/live-update-notifier#readme"
 }
