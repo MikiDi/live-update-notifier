@@ -2,7 +2,7 @@ import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
 import { query, update, sparqlEscapeString, sparqlEscapeUri, uuid as generateUuid } from 'mu';
 import { parseSparqlResults } from './util';
 
-const SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
+// const SESSIONS_GRAPH = 'http://mu.semte.ch/graphs/sessions';
 const SUBSCRIPTIONS_GRAPH = 'http://mu.semte.ch/graphs/subscriptions';
 
 async function subscribe (sessionUri, headId, resources) {
@@ -11,19 +11,13 @@ async function subscribe (sessionUri, headId, resources) {
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
-INSERT {
+INSERT DATA {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
             mu:uuid ${sparqlEscapeString(subscriptionId)} ;
-            ext:session ?session ;
+            ext:session ${sparqlEscapeUri(sessionUri)} ;
             ext:headId ${sparqlEscapeString(headId)} ;
             ext:resources ${resources.map(sparqlEscapeUri).join(', ')} .
-    }
-}
-WHERE {
-    GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessionId .
-        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessionId .
     }
 }
   `;
@@ -44,14 +38,10 @@ DELETE {
     }
 }
 WHERE {
-    GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessionId .
-        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessionId .
-    }
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
             mu:uuid ${sparqlEscapeString(subscriptionId)} ;
-            ext:session ?session ;
+            ext:session ${sparqlEscapeUri(sessionUri)} ;
             ext:headId ${sparqlEscapeString(headId)} ;
             ?p ?o .
     }
@@ -77,9 +67,6 @@ WHERE {
             ${resources.map(sparqlEscapeUri).join('\n                ')}
         }
     }
-    GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessid .
-    }
 }
   `;
   const result = await querySudo(queryString);
@@ -96,12 +83,8 @@ WHERE {
     GRAPH <${SUBSCRIPTIONS_GRAPH}> {
         ?subscription a ext:Subscription ;
             mu:uuid ?id ;
-            ext:session ?session ;
+            ext:session ${sparqlEscapeUri(sessionUri)} ;
             ext:headId ${sparqlEscapeString(headId)}  .
-    }
-    GRAPH <${SESSIONS_GRAPH}> {
-        ?session mu:uuid ?sessid .
-        ${sparqlEscapeUri(sessionUri)} mu:uuid ?sessid .
     }
 }
   `;
